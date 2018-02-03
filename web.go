@@ -4,7 +4,6 @@ package web
 
 import (
 	"crypto/tls"
-	"golang.org/x/net/websocket"
 	"log"
 	"mime"
 	"net/http"
@@ -12,6 +11,8 @@ import (
 	"path"
 	"reflect"
 	"strings"
+
+	"golang.org/x/net/websocket"
 )
 
 // A Context object is created for every incoming HTTP request, and is
@@ -41,10 +42,10 @@ func (ctx *Context) Abort(status int, body string) {
 }
 
 // Redirect is a helper method for 3xx redirects.
-func (ctx *Context) Redirect(status int, url_ string) {
-	ctx.ResponseWriter.Header().Set("Location", url_)
+func (ctx *Context) Redirect(status int, url string) {
+	ctx.ResponseWriter.Header().Set("Location", url)
 	ctx.ResponseWriter.WriteHeader(status)
-	ctx.ResponseWriter.Write([]byte("Redirecting to: " + url_))
+	ctx.ResponseWriter.Write([]byte("Redirecting to: " + url))
 }
 
 //BadRequest writes a 400 HTTP response
@@ -52,7 +53,7 @@ func (ctx *Context) BadRequest() {
 	ctx.ResponseWriter.WriteHeader(400)
 }
 
-// Notmodified writes a 304 HTTP response
+// NotModified writes a 304 HTTP response
 func (ctx *Context) NotModified() {
 	ctx.ResponseWriter.WriteHeader(304)
 }
@@ -187,12 +188,13 @@ func Match(method string, route string, handler interface{}) {
 	mainServer.addRoute(route, method, handler)
 }
 
-// Add a custom http.Handler. Will have no effect when running as FCGI or SCGI.
+// Handle Add a custom http.Handler. Will have no effect when running as FCGI or SCGI.
 func Handle(route string, method string, httpHandler http.Handler) {
 	mainServer.Handle(route, method, httpHandler)
 }
 
-//Adds a handler for websockets. Only for webserver mode. Will have no effect when running as FCGI or SCGI.
+// Websocket Adds a handler for websockets. Only for webserver mode.
+// Will have no effect when running as FCGI or SCGI.
 func Websocket(route string, httpHandler websocket.Handler) {
 	mainServer.Websocket(route, httpHandler)
 }
